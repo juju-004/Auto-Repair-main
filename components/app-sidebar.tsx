@@ -65,12 +65,6 @@ const routes = [
     href: "/dashboard/reports",
     color: "text-red-500",
   },
-  {
-    label: "Settings",
-    icon: Settings,
-    href: "/dashboard/settings",
-    color: "text-gray-500",
-  },
 ];
 
 export function AppSidebar() {
