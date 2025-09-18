@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Car,
@@ -29,6 +29,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useSession } from "@/contexts/SessionContext";
+import { useTransition } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { filterError } from "@/lib/helpers";
 
 const routes = [
   {
@@ -72,6 +76,21 @@ const routes = [
 export function AppSidebar() {
   const user = useSession();
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const signOut = () => {
+    startTransition(async () => {
+      try {
+        await axios.post("/api/signout");
+        toast.success("Signout successful");
+        router.replace("/login");
+      } catch (error) {
+        toast.error(filterError(error));
+      }
+      return;
+    });
+  };
 
   return (
     <Sidebar className="!bg-black">
@@ -127,9 +146,9 @@ export function AppSidebar() {
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Logout">
+                <SidebarMenuButton tooltip="Logout" onClick={signOut}>
                   <LogOut className="h-5 w-5 text-gray-500" />
-                  <span>Logout</span>
+                  <span>{isPending ? "Logging out..." : "Logout"}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
